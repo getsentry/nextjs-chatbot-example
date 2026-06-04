@@ -16,7 +16,10 @@ export function SentryUser() {
   const email = session?.user?.email ?? undefined;
 
   useEffect(() => {
-    Sentry.setUser(id ? { id, type, email } : null);
+    // ip_address: "{{auto}}" is meaningful only client-side — Sentry's ingestion
+    // infers it from the browser's own connection (the real end-user IP). Kept
+    // here so we retain user IPs even with sendDefaultPii disabled.
+    Sentry.setUser(id ? { id, type, email, ip_address: "{{auto}}" } : null);
   }, [id, type, email]);
 
   return null;
