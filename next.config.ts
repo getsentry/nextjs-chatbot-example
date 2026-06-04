@@ -1,9 +1,23 @@
+import { withSentryConfig } from "@sentry/nextjs";
 import { withBotId } from "botid/next/config";
 import type { NextConfig } from "next";
 
 const basePath = process.env.IS_DEMO === "1" ? "/demo" : "";
 
 const nextConfig: NextConfig = {
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Document-Policy",
+            value: "js-profiling",
+          },
+        ],
+      },
+    ];
+  },
   ...(basePath
     ? {
         basePath,
@@ -51,4 +65,11 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withBotId(nextConfig);
+export default withSentryConfig(withBotId(nextConfig), {
+  org: "sentry-developer-experience",
+  project: "chatbot",
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  widenClientFileUpload: true,
+  tunnelRoute: "/sentry-tunnel",
+  silent: !process.env.CI,
+});
