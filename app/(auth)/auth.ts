@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import { compare } from "bcrypt-ts";
 import NextAuth, { type DefaultSession } from "next-auth";
 import type { DefaultJWT } from "next-auth/jwt";
@@ -92,6 +93,13 @@ export const {
         session.user.id = token.id;
         session.user.type = token.type;
       }
+
+      // Associate server-side (node) Sentry events with the authenticated user.
+      Sentry.setUser(
+        token?.id
+          ? { id: token.id, type: token.type, email: token.email ?? undefined }
+          : null
+      );
 
       return session;
     },
