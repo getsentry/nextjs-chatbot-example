@@ -10,4 +10,15 @@ Sentry.init({
 
   // Logs
   enableLogs: true,
+
+  // AI Agent Monitoring: stream gen_ai spans to the AI Agents dashboard
+  streamGenAiSpans: true,
+
+  // Vercel AI SDK instrumentation must be enabled explicitly in the edge runtime.
+  integrations: [
+    Sentry.vercelAIIntegration({
+      recordInputs: true,
+      recordOutputs: true,
+    }),
+  ],
 });

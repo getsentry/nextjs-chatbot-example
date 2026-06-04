@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import { geolocation, ipAddress } from "@vercel/functions";
 import {
   convertToModelMessages,
@@ -25,7 +26,6 @@ import { editDocument } from "@/lib/ai/tools/edit-document";
 import { getWeather } from "@/lib/ai/tools/get-weather";
 import { requestSuggestions } from "@/lib/ai/tools/request-suggestions";
 import { updateDocument } from "@/lib/ai/tools/update-document";
-import { isProductionEnvironment } from "@/lib/constants";
 import {
   createStreamId,
   deleteChatById,
@@ -79,6 +79,11 @@ export async function POST(request: Request) {
     if (!session?.user) {
       return new ChatbotError("unauthorized:chat").toResponse();
     }
+
+    // Group all gen_ai spans from this chat (across turns) into one Sentry
+    // conversation. Set once per request scope; covers the main stream plus
+    // the title-generation and tool LLM calls fired within this request.
+    Sentry.setConversationId(id);
 
     const chatModel = allowedModelIds.has(selectedChatModel)
       ? selectedChatModel
@@ -234,7 +239,7 @@ export async function POST(request: Request) {
             }),
           },
           experimental_telemetry: {
-            isEnabled: isProductionEnvironment,
+            isEnabled: true,
             functionId: "stream-text",
           },
         });

@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import { type NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { guestRegex, isDevelopmentEnvironment } from "./lib/constants";
@@ -18,6 +19,13 @@ export async function proxy(request: NextRequest) {
     secret: process.env.AUTH_SECRET,
     secureCookie: !isDevelopmentEnvironment,
   });
+
+  // Associate edge-runtime (middleware) Sentry events with the authenticated user.
+  Sentry.setUser(
+    token?.id
+      ? { id: token.id, type: token.type, email: token.email ?? undefined }
+      : null
+  );
 
   const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 

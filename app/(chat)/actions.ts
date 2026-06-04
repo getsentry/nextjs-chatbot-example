@@ -32,6 +32,10 @@ export async function generateTitleFromUserMessage({
     providerOptions: {
       gateway: { order: titleModel.gatewayOrder },
     },
+    experimental_telemetry: {
+      isEnabled: true,
+      functionId: "generate-title",
+    },
   });
   return text
     .replace(/^[#*"\s]+/, "")

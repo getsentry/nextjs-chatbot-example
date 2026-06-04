@@ -60,6 +60,10 @@ export const requestSuggestions = ({
               .describe("The description of the suggestion"),
           }),
         }),
+        experimental_telemetry: {
+          isEnabled: true,
+          functionId: "request-suggestions",
+        },
       });
 
       let processedCount = 0;

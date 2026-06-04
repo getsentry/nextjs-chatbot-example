@@ -16,5 +16,16 @@ Sentry.init({
   // Logs
   enableLogs: true,
 
-  integrations: [nodeProfilingIntegration()],
+  // AI Agent Monitoring: stream gen_ai spans to the AI Agents dashboard
+  streamGenAiSpans: true,
+
+  integrations: [
+    nodeProfilingIntegration(),
+    // Captures Vercel AI SDK calls (generateText/streamText) as gen_ai spans.
+    // recordInputs/recordOutputs default to true because sendDefaultPii is on.
+    Sentry.vercelAIIntegration({
+      recordInputs: true,
+      recordOutputs: true,
+    }),
+  ],
 });
