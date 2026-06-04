@@ -14,9 +14,7 @@ Sentry.init({
   profileLifecycle: "trace",
 
   // Logs
-  _experiments: { enableLogs: true },
+  enableLogs: true,
 
-  integrations: [
-    nodeProfilingIntegration(),
-  ],
+  integrations: [nodeProfilingIntegration()],
 });

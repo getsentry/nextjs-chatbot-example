@@ -18,7 +18,7 @@ Sentry.init({
   replaysOnErrorSampleRate: 1.0,
 
   // Logs
-  _experiments: { enableLogs: true },
+  enableLogs: true,
 
   integrations: [
     Sentry.replayIntegration({

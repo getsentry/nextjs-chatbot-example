@@ -9,5 +9,5 @@ Sentry.init({
   tracesSampleRate: 1.0,
 
   // Logs
-  _experiments: { enableLogs: true },
+  enableLogs: true,
 });
