@@ -22,8 +22,13 @@ Sentry.init({
   integrations: [
     nodeProfilingIntegration(),
     // Captures Vercel AI SDK calls (generateText/streamText) as gen_ai spans.
-    // recordInputs/recordOutputs default to true because sendDefaultPii is on.
+    // force: true is required in the Next.js production build: `ai` is bundled
+    // (intentionally not in serverExternalPackages), so OTel can't patch it and
+    // module auto-detection fails — without force, the ai.* -> gen_ai.* event
+    // processor never attaches and prod only shows raw ai.* spans. See
+    // getsentry/sentry-javascript#19147.
     Sentry.vercelAIIntegration({
+      force: true,
       recordInputs: true,
       recordOutputs: true,
     }),
