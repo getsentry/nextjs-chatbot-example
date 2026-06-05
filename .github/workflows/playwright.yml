@@ -10,8 +10,12 @@ jobs:
     timeout-minutes: 30
     runs-on: ubuntu-latest
     env:
-      BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-      BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
+      # This app uses Auth.js (next-auth), which reads AUTH_SECRET — not the
+      # Better Auth variables this workflow shipped with. Without it the dev
+      # server throws `MissingSecret` and every auth-dependent test fails.
+      # Any stable, non-empty value is fine here: it only signs ephemeral
+      # session JWTs within the test run and is not used in any real environment.
+      AUTH_SECRET: integration-tests-secret-not-used-in-production
       POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
       BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
       REDIS_URL: ${{ secrets.REDIS_URL }}
@@ -51,6 +55,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Run database migrations
+        run: pnpm db:migrate
 
       - name: Cache Playwright browsers
         uses: actions/cache@v3

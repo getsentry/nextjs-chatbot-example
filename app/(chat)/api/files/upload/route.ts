@@ -51,6 +51,10 @@ export async function POST(request: Request) {
     try {
       const data = await put(`${safeName}`, fileBuffer, {
         access: "public",
+        // @vercel/blob v2 defaults addRandomSuffix to false; keep it on (the
+        // pre-v2 default) so repeat uploads of the same filename get unique
+        // URLs instead of throwing on an existing blob path.
+        addRandomSuffix: true,
       });
 
       return NextResponse.json(data);
